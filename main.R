@@ -2,6 +2,8 @@ require(magrittr)
 require(tibble)
 require(dplyr)
 require(ggplot2)
+require(ggthemes)
+require(gghighlight)
 
 wd <- "C:\\Users\\Lukas Olson\\DataspellProjects\\UFOR401TreeAssessment"
 targetObjectID <- 1
@@ -25,8 +27,10 @@ dbhDataFrame <- dbhDataFrame %>% mutate(Score = Score + ifelse(((1-(abs((NEIGHBO
 
 finalRanking <- dbhDataFrame[-targetObjectID,]
 
-# Plot results
-ggplot(data = finalRanking, aes(x = Score, y = THEIGHT, col = DBH)) + geom_point()
+top25 <- top_n(finalRanking, 0.25 * nrow(finalRanking), Score)
 
-#print(finalRanking)
+top25Mean <- mean(top25$Score)
+
+# Plot results
+ggplot(title = "Score vs Tree Height (m)",data = finalRanking, aes(x = Score, y = THEIGHT, col = DBH)) + geom_point() + gghighlight(Score >= top25Mean)
 
