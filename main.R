@@ -6,11 +6,13 @@ require(ggthemes)
 require(gghighlight)
 
 wd <- "C:\\Users\\Lukas Olson\\DataspellProjects\\UFOR401TreeAssessment"
-targetObjectID <- 1
-targetDBHSizeRatio <- 2
+ObjectID <- 1
 
 setwd(wd)
 data <- read.csv("data.csv")
+
+get_match <- function (data, targetObjectID, targetDBHSizeRatio){
+
 selectedEntry <- data[targetObjectID,]
 
 targetDBHSize <- selectedEntry$DBH * targetDBHSizeRatio
@@ -27,10 +29,25 @@ dbhDataFrame <- dbhDataFrame %>% mutate(Score = Score + ifelse(((1-(abs((NEIGHBO
 
 finalRanking <- dbhDataFrame[-targetObjectID,]
 
-top25 <- top_n(finalRanking, 0.25 * nrow(finalRanking), Score)
+return (finalRanking)
+}
 
-top25Mean <- mean(top25$Score)
+make_s_graph <- function (data, title){
+  dataTop10Percent <- top_frac(data, 0.1, Score)
+  dataMin <- min(dataTop10Percent$Score)
+  dataMean <- mean(dataTop10Percent$Score)
 
-# Plot results
-ggplot(title = "Score vs Tree Height (m)",data = finalRanking, aes(x = Score, y = THEIGHT, col = DBH)) + geom_point() + gghighlight(Score >= top25Mean)
+  ggplot(data = data, aes(x = Score, y = THEIGHT, col = DBH)) + ggtitle(paste(title, " Tree Height (m) VS Score")) + geom_point() + gghighlight(Score >= dataMin) + geom_vline(xintercept = dataMean, linetype = "dashed", color = "red")
+}
 
+r2 <- get_match(data, ObjectID, 2)
+r3 <- get_match(data, ObjectID, 3)
+r4 <- get_match(data, ObjectID, 4)
+
+make_s_graph(r2, "R2")
+make_s_graph(r3, "R3")
+make_s_graph(r4, "R4")
+
+r2Top10 <- top_frac(r2, 0.1, Score)
+r3Top10 <- top_frac(r3, 0.1, Score)
+r4Top10 <- top_frac(r4, 0.1, Score)
