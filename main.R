@@ -6,9 +6,9 @@ require(ggthemes)
 require(gghighlight)
 
 wd <- "C:\\Users\\Lukas Olson\\DataspellProjects\\UFOR401TreeAssessment"
-ObjectID <- 5
+ObjectID <- 19
 
-dbhMultipliers <- c(1, 2, 3, 4,5)
+dbhMultipliers <- seq(from = 1, to = 10, by = 1)
 
 
 setwd(wd)
@@ -66,8 +66,12 @@ calculate_series <- function (data, targetObjectID, dbhMultiplierSeries){
 
 dataframe <- calculate_series(data, ObjectID, dbhMultipliers)
 
+#model <- lm(Height~DBHSizeRatio, data=dataframe)
 
-ggplot(data = dataframe, aes(x = DBHSizeRatio, y = Height)) + geom_point() + geom_line() + ggtitle("DBH Size Ratio VS Average Tree Height (m)")
+
+ggplot(data = dataframe, aes(x = DBHSizeRatio, y = Height)) + geom_point() + geom_smooth(method = "lm", se = TRUE) + ggtitle("DBH Size Ratio VS Average Tree Height (m)")
+
+
 
 #s2 <- get_match(data, ObjectID, 2)
 #s3 <- get_match(data, ObjectID, 3)
